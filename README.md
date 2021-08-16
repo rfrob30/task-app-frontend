@@ -10,3 +10,4 @@ In the project directory, you can run:
 ### `yarn start`
 
 CRA with react hooks, service and context for state management with JWT auth.
+Validation responses have not been developed.
