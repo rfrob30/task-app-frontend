@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Store } from "../../context/Store";
 import { makeStyles } from "@material-ui/core/styles";
 import UserService from "../../services/user.service";
@@ -26,11 +26,15 @@ function getModalStyle() {
   };
 }
 
-const TaskModal = React.forwardRef(({ handleCloseModal }) => {
+const TaskModal = React.forwardRef(({ handleCloseModal, task }, ref) => {
   const classes = useStyles();
   const { dispatch } = useContext(Store);
   const [modalStyle] = useState(getModalStyle);
-  const [name, setName] = useState("");
+  const [name, setName] = useState(task ? task.Name : "");
+
+  useEffect(() => {
+    if (task) setName(task.name);
+  }, [task]);
 
   const handleSubmitTask = () => {
     const data = {
@@ -55,27 +59,63 @@ const TaskModal = React.forwardRef(({ handleCloseModal }) => {
     );
   };
 
+  const handleUpdateTask = () => {
+    UserService.updateTask(task._id, name, task.completed).then(
+      (response) => {
+        dispatch({ type: "update", newTask: response.data });
+        handleCloseModal();
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  };
+
   return (
     <>
-      <div style={modalStyle} className={classes.paper}>
-        <h2>+ New Task</h2>
-        <TextField
-          id='task-name'
-          label='Task Name'
-          variant='outlined'
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className='my-3'
-        />
-        <div>
-          <Button
-            variant='contained'
-            color='primary'
-            onClick={handleSubmitTask}>
-            + New Task
-          </Button>
+      {task && task.name ? (
+        <div style={modalStyle} className={classes.paper}>
+          <h2>Edit Task</h2>
+          <TextField
+            id='task-name'
+            label='Task Name'
+            variant='outlined'
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className='my-3'
+            size='small'
+          />
+          <div>
+            <Button
+              onClick={handleUpdateTask}
+              variant='contained'
+              color='primary'>
+              Update Task
+            </Button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div style={modalStyle} className={classes.paper}>
+          <h2>+ New Task</h2>
+          <TextField
+            id='task-name'
+            label='Task Name'
+            variant='outlined'
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className='my-3'
+            size='small'
+          />
+          <div>
+            <Button
+              variant='contained'
+              color='primary'
+              onClick={handleSubmitTask}>
+              + New Task
+            </Button>
+          </div>
+        </div>
+      )}
     </>
   );
 });

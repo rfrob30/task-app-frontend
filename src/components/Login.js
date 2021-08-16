@@ -1,4 +1,5 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
+import { Store } from "../context/Store";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
@@ -19,10 +20,18 @@ const Login = (props) => {
   const form = useRef();
   const checkBtn = useRef();
 
+  const { state, dispatch } = useContext(Store);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (!!state.isLoggedIn) {
+      props.history.push("/dashboard");
+      window.location.reload();
+    }
+  }, [state.isLoggedIn]);
 
   const onChangeEmail = (e) => {
     const email = e.target.value;
@@ -45,8 +54,7 @@ const Login = (props) => {
     if (checkBtn.current.context._errors.length === 0) {
       AuthService.login(email, password).then(
         () => {
-          props.history.push("/dashboard");
-          window.location.reload();
+          dispatch({ type: "login", isLoggedIn: true });
         },
         (error) => {
           const resMessage =

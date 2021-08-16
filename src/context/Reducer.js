@@ -1,4 +1,10 @@
-export const initState = { taskList: [], summary: {} };
+import AuthService from "../services/auth.service";
+
+export const initState = {
+  taskList: [],
+  summary: {},
+  isLoggedIn: AuthService.getCurrentUser() || false,
+};
 
 export function reducer(state, action) {
   switch (action.type) {
@@ -15,7 +21,7 @@ export function reducer(state, action) {
     case "add":
       state.taskList.unshift(action.newTask);
       state.summary = recalculateSummary(state);
-
+      console.log("reducer add");
       return {
         ...state,
       };
@@ -38,6 +44,11 @@ export function reducer(state, action) {
 
       return {
         ...state,
+      };
+    case "login":
+      return {
+        ...state,
+        isLoggedIn: action.isLoggedIn,
       };
     default:
       return state;

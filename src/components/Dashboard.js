@@ -12,18 +12,19 @@ import {
 import TaskList from "./Task/TaskList";
 import TaskModal from "./Task/TaskModal";
 import { Redirect, Route } from "react-router-dom";
-import AuthService from "../services/auth.service";
+import { Pie } from "react-chartjs-2";
 
 const Dashboard = () => {
   const { state, dispatch } = useContext(Store);
   const [content, setContent] = useState("");
-  const currentUser = AuthService.getCurrentUser();
+  const [chartData, setChartData] = useState({});
 
   useEffect(() => {
     // get dashboard summary
     UserService.getUserBoard().then(
       (response) => {
         setContent(response.data);
+        updateChartData(response.data);
         dispatch({ type: "setSummary", summary: response.data });
       },
       (error) => {
@@ -39,10 +40,32 @@ const Dashboard = () => {
     );
   }, []);
 
+  useEffect(() => {
+    updateChartData(content);
+  }, [content.totalTasks, content.tasksCompleted]);
+
+  const updateChartData = (data) => {
+    setChartData({
+      labels: ["Completed", "Total"],
+      datasets: [
+        {
+          label: "Completed Tasks",
+          data: [data.tasksCompleted, data.totalTasks],
+          backgroundColor: [
+            "rgba(255, 99, 132, 0.2)",
+            "rgba(54, 162, 235, 0.2)",
+          ],
+          borderColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)"],
+          borderWidth: 1,
+        },
+      ],
+    });
+  };
+
   return (
     <Route
-      render={(props) =>
-        currentUser ? (
+      render={() =>
+        state.isLoggedIn ? (
           <>
             {content.totalTasks === 0 ? (
               <TaskModal></TaskModal>
@@ -84,7 +107,14 @@ const Dashboard = () => {
 
                   <Grid xs={12} sm={4} item>
                     <Card style={{ height: 200 }}>
-                      <CardContent>Chart library here</CardContent>
+                      <CardContent>
+                        <Pie
+                          data={chartData}
+                          width={300}
+                          height={150}
+                          options={{ maintainAspectRatio: false }}
+                        />
+                      </CardContent>
                     </Card>
                   </Grid>
                 </Grid>

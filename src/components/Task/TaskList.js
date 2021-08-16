@@ -18,6 +18,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from "@material-ui/icons/Edit";
 import TaskModal from "./TaskModal";
 
 const useStyles = makeStyles((theme) => ({
@@ -33,13 +34,12 @@ const TaskList = () => {
   const { state, dispatch } = useContext(Store);
   const [filteredTaskList, setFilteredTaskList] = useState([]);
   const [searched, setSearched] = useState("");
-  const [taskList, setTaskList] = useState([]);
   const [openModal, setOpenModal] = useState(false);
+  const [openedTask, setIsOpenedTask] = useState({ name: "" });
 
   useEffect(() => {
     UserService.getAllTasks().then(
       (response) => {
-        setTaskList(response.data);
         setFilteredTaskList(response.data);
         dispatch({ type: "setTaskList", taskList: response.data });
       },
@@ -50,15 +50,13 @@ const TaskList = () => {
             error.response.data.message) ||
           error.message ||
           error.toString();
-
-        setTaskList(_content);
       }
     );
   }, []);
 
   useEffect(() => {
     setFilteredTaskList(state.taskList);
-  }, [state.taskList]);
+  }, [state.taskList.length]);
 
   const requestSearch = (searchedVal) => {
     setSearched(searchedVal);
@@ -68,7 +66,7 @@ const TaskList = () => {
     setFilteredTaskList(filteredRows);
   };
 
-  const updateTask = (completed, name, task) => {
+  const handleUpdateTask = (completed, name, task) => {
     UserService.updateTask(task._id, name, completed).then(
       (response) => {
         task.completed = response.data.completed;
@@ -86,6 +84,7 @@ const TaskList = () => {
 
   const handleCloseModal = () => {
     setOpenModal(false);
+    setIsOpenedTask(null);
   };
 
   const handleDeleteTask = (task) => {
@@ -98,6 +97,12 @@ const TaskList = () => {
         console.log(error);
       }
     );
+  };
+
+  const handleEditTask = (task) => {
+    setIsOpenedTask(task);
+    console.log(openedTask);
+    handleOpenModal();
   };
 
   return (
@@ -120,6 +125,7 @@ const TaskList = () => {
             label='Search tasks'
             type='search'
             variant='outlined'
+            size='small'
             value={searched}
             onChange={(e) => requestSearch(e.target.value)}
           />
@@ -140,7 +146,7 @@ const TaskList = () => {
                     <ListItemIcon>
                       <Checkbox
                         onChange={(e) =>
-                          updateTask(e.target.checked, task.name, task)
+                          handleUpdateTask(e.target.checked, task.name, task)
                         }
                         edge='start'
                         checked={task.completed}
@@ -150,9 +156,14 @@ const TaskList = () => {
                       />
                     </ListItemIcon>
                     <ListItemText id={labelId} primary={`${task.name}`} />
-                    <ListItemSecondaryAction
-                      onClick={() => handleDeleteTask(task)}>
-                      <IconButton edge='end' aria-label='delete'>
+                    <ListItemSecondaryAction>
+                      <IconButton aria-label='edit'>
+                        <EditIcon onClick={() => handleEditTask(task)} />
+                      </IconButton>
+                      <IconButton
+                        edge='end'
+                        aria-label='delete'
+                        onClick={() => handleDeleteTask(task)}>
                         <DeleteIcon />
                       </IconButton>
                     </ListItemSecondaryAction>
@@ -168,7 +179,13 @@ const TaskList = () => {
         onClose={handleCloseModal}
         aria-labelledby='simple-modal-title'
         aria-describedby='simple-modal-description'>
-        <TaskModal handleCloseModal={handleCloseModal}></TaskModal>
+        {!!openedTask ? (
+          <TaskModal
+            handleCloseModal={handleCloseModal}
+            task={openedTask}></TaskModal>
+        ) : (
+          <TaskModal handleCloseModal={handleCloseModal}></TaskModal>
+        )}
       </Modal>
     </>
   );

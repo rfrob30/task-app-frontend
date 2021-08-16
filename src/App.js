@@ -28,8 +28,8 @@ const App = () => {
       <div className='main-background'>
         {currentUser && (
           <nav className='navbar navbar-expand navbar-dark bg-dark'>
-            <Link to={"/"} className='navbar-brand'>
-              user
+            <Link to={"/"} className='navbar-brand mx-2'>
+              User
             </Link>
             <div className='navbar-nav mr-auto'>
               {currentUser && (
