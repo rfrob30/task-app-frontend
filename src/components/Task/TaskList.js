@@ -75,12 +75,7 @@ const TaskList = () => {
         dispatch({ type: "update", newTask: response.data });
       },
       (error) => {
-        const _content =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
+        console.log(error);
       }
     );
   };
@@ -100,12 +95,7 @@ const TaskList = () => {
         dispatch({ type: "delete", id: task._id });
       },
       (error) => {
-        const _content =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
+        console.log(error);
       }
     );
   };
