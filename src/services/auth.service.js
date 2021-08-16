@@ -3,8 +3,7 @@ import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
 
-// TODO: move this to env
-const API_URL = "http://localhost:4000/";
+const API_URL = process.env.REACT_APP_API_URL;
 
 const login = (email, password) => {
   return axios

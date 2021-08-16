@@ -1,8 +1,7 @@
 import axios from "axios";
 import authHeader from "./auth-header";
 
-// TODO: Move this to an env
-const API_URL = "http://localhost:4000/";
+const API_URL = process.env.REACT_APP_API_URL;
 
 const getAllTasks = () => {
   return axios.get(API_URL + "tasks", { headers: authHeader() });
