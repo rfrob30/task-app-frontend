@@ -8,3 +8,5 @@ In the project directory, you can run:
 
 ### `yarn install`
 ### `yarn start`
+
+CRA with react hooks, service and context for state management with JWT auth.
