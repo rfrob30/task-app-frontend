@@ -8,11 +8,14 @@ const getAllTasks = () => {
 };
 
 const updateTask = (id, name, completed) => {
-  return axios.put(API_URL + `tasks/${id}`, {
-    completed,
-    name,
-    headers: authHeader(),
-  });
+  return axios.put(
+    API_URL + `tasks/${id}`,
+    {
+      completed,
+      name,
+    },
+    { headers: authHeader() }
+  );
 };
 
 const createTask = (task) => {
