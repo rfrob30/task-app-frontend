@@ -46,11 +46,11 @@ const Dashboard = () => {
 
   const updateChartData = (data) => {
     setChartData({
-      labels: ["Completed", "Total"],
+      labels: ["Completed", "Incomplete"],
       datasets: [
         {
           label: "Completed Tasks",
-          data: [data.tasksCompleted, data.totalTasks],
+          data: [data.tasksCompleted, data.totalTasks - data.tasksCompleted],
           backgroundColor: [
             "rgba(255, 99, 132, 0.2)",
             "rgba(54, 162, 235, 0.2)",
