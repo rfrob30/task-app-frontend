@@ -10,4 +10,17 @@ In the project directory, you can run:
 ### `yarn start`
 
 CRA with react hooks, service and context for state management with JWT auth.
+###
 Validation responses have not been developed.
+###
+
+Create a .env and add your API URL
+`REACT_APP_API_URL=http://localhost:8080/`
+
+Note: Please use http if you are using the deployed app on heroku, as I dont have an SSL for the ec2 instance :)
+###
+Live credentials:
+###
+admin@tdcx.com
+###
+admin123
